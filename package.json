@@ -38,9 +38,12 @@
     "start": "yarn build && node ./dist/index.js | ./node_modules/.bin/bunyan"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bunyan": "^1.8.12",
     "good": "^8.1.0",
     "good-console": "^7.1.0",
-    "hapi": "^17.2.0"
+    "hapi": "^17.2.0",
+    "immutable": "^3.8.2",
+    "moment": "^2.20.1"
   }
 }

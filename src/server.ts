@@ -1,22 +1,35 @@
 import Hapi from "hapi";
 import logger from "./utils/logger";
 
+import HealthController from "./controller/HealthController";
+import StatsController from "./controller/StatsController";
+import SatelliteService from "./service/StatsService";
+
 export default class Server {
   private apiServer: Hapi.Server;
+  private statsController: StatsController;
+  private healthController: HealthController;
 
-  constructor() {
+  constructor(readonly service: SatelliteService = new SatelliteService()) {
     this.apiServer = new Hapi.Server({
       port: process.env.PORT || 8080,
       host: process.env.HOST || "localhost"
     });
 
+    this.service = service;
+    this.healthController = new HealthController(this.service);
+    this.statsController = new StatsController(this.service);
+
     const routes: Hapi.ServerRoute[] = [
       {
         method: "GET",
-        path: "/",
-        handler: async (request: Hapi.Request, reply: Hapi.ResponseToolkit) => {
-          return reply.response({ hello: "world" });
-        }
+        path: "/stats",
+        handler: this.statsController.getAll
+      },
+      {
+        method: "GET",
+        path: "/health",
+        handler: this.healthController.getStatus
       }
     ];
 
@@ -26,6 +39,7 @@ export default class Server {
   public async start() {
     await this.registerPlugins();
     await this.apiServer.start();
+    this.service.startPolling();
 
     const settings = this.apiServer.settings;
 
