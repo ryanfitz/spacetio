@@ -12,10 +12,6 @@ import StatsService from "./StatsService";
 
 jest.useFakeTimers();
 
-beforeEach(() => {
-  jest.resetAllMocks();
-});
-
 it("start polling triggers fetch", () => {
   const service = new StatsService();
   service.startPolling();
